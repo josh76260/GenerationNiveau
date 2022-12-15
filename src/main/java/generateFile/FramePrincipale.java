@@ -225,7 +225,7 @@ public class FramePrincipale extends JFrame implements ActionListener {
         }
         if (e.getSource() == validEdit) {
             if (select != null) {
-                comboBtnPion.put(select, selectType.getSelectedItem() + "" + selectCouleur.getSelectedItem());
+                comboBtnPion.put(select, selectType.getSelectedItem() + ";" + selectCouleur.getSelectedItem());
                 select.setText(selectType.getSelectedItem() + "" + selectCouleur.getSelectedItem());
             }
         }
