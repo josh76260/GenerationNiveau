@@ -47,8 +47,8 @@ public class FramePrincipale extends JFrame implements ActionListener {
         comboBtnCoord = new HashMap<>();
         comboBtnPion = new HashMap<>();
         ButtonGroup buttonGroup = new ButtonGroup();
-        for (int i = 0, ligne = 0, colonne = 0; i < 81; i++) {
-            if (i % 9 == 0 && i != 0) {
+        for (int i = 0, ligne = 0, colonne = 0; i < 100; i++) {
+            if (i % 10 == 0 && i != 0) {
                 ligne++;
                 colonne = 0;
             }
@@ -123,18 +123,18 @@ public class FramePrincipale extends JFrame implements ActionListener {
 
                 //======== PanelPlateau ========
                 {
-                    panelPlateau.setLayout(new GridLayout(10, 10, 5, 5));
+                    panelPlateau.setLayout(new GridLayout(11, 11, 5, 5));
                     for (JToggleButton bouton :
                             listButton) {
                         panelPlateau.add(bouton);
                         bouton.addActionListener(this);
                     }
                     panelPlateau.add(new JLabel("", SwingConstants.CENTER), 0);
-                    for (int i = 1; i < 10; i++) {
+                    for (int i = 1; i < 11; i++) {
                         panelPlateau.add(new JLabel((char) ('A' + i - 1) + "", SwingConstants.CENTER), i);
                     }
-                    for (int i = 10; i < 100; i += 10) {
-                        panelPlateau.add(new JLabel(i % 100 / 10 + "", SwingConstants.CENTER), i);
+                    for (int i = 11; i < 120; i += 11) {
+                        panelPlateau.add(new JLabel(i % 120 / 11 + "", SwingConstants.CENTER), i);
                     }
 
                 }
