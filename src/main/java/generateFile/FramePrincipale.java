@@ -4,26 +4,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * @author Joshua GALIEN
  */
 public class FramePrincipale extends JFrame implements ActionListener {
-    private JButton buttonGenerate;
     private JComboBox<String> selectCouleur;
     private JComboBox<String> selectType;
     private JButton validEdit;
     private JButton resetBtn;
     private JTextField filename;
-    private HashMap<JToggleButton, String> comboBtnCoord;
     private HashMap<JToggleButton, String> comboBtnPion;
 
     private JToggleButton select;
+    private JButton btnChooseFile;
 
     public FramePrincipale() {
         initComponents();
@@ -37,15 +33,18 @@ public class FramePrincipale extends JFrame implements ActionListener {
         }
         var panelBoutonsAction = new JPanel();
         var label4 = new JLabel("Nom du fichier : ");
+        HashMap<JToggleButton, String> comboBtnCoord = new HashMap<>();
+        comboBtnPion = new HashMap<>();
         filename = new JTextField();
-        buttonGenerate = new JButton("Générer");
-        buttonGenerate.addActionListener(this);
-        JButton buttonCancel = new JButton();
+        filename.setEditable(false);
+        filename.setFocusable(false);
+        btnChooseFile = new JButton("Choisir");
+        btnChooseFile.addActionListener(this);
+        JButton buttonGenerate = new JButton(new SaveAction(filename, comboBtnCoord, comboBtnPion));
+        JButton buttonCancel = new JButton(new ActionQuitter());
         JPanel panelContenant = new JPanel();
         JPanel panelPlateau = new JPanel();
         ArrayList<JToggleButton> listButton = new ArrayList<>();
-        comboBtnCoord = new HashMap<>();
-        comboBtnPion = new HashMap<>();
         ButtonGroup buttonGroup = new ButtonGroup();
         for (int i = 0, ligne = 0, colonne = 0; i < 100; i++) {
             if (i % 10 == 0 && i != 0) {
@@ -76,34 +75,54 @@ public class FramePrincipale extends JFrame implements ActionListener {
         var contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
 
+        //======== menuBar1 ========
+        JMenuBar menuBar1 = new JMenuBar();
+        {
+
+            //======== menu1 ========
+            JMenu menu1 = new JMenu();
+            {
+                menu1.setText("Fichier");
+
+                //---- menuItem1 ----
+                JMenuItem menuItem1 = new JMenuItem(new SaveAction(filename, comboBtnCoord, comboBtnPion));
+                menu1.add(menuItem1);
+
+                //---- menuItem2 ----
+                JMenuItem menuItem2 = new JMenuItem(new LoadFileAction(filename, comboBtnCoord, comboBtnPion));
+                menu1.add(menuItem2);
+
+                //---- menuItem3 ----
+                JMenuItem menuItem3 = new JMenuItem(new ActionQuitter());
+                menu1.add(menuItem3);
+            }
+            menuBar1.add(menu1);
+        }
+        setJMenuBar(menuBar1);
+
         //======== panelAction ========
         {
             //======== panelBoutonsAction ========
             {
                 //---- buttonCancel ----
-                buttonCancel.setAction(new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.exit(0);
-                    }
-                });
-                buttonCancel.setText("Quitter");
-
                 GroupLayout panelBoutonsActionLayout = new GroupLayout(panelBoutonsAction);
                 panelBoutonsAction.setLayout(panelBoutonsActionLayout);
                 panelBoutonsActionLayout.setHorizontalGroup(
                         panelBoutonsActionLayout.createParallelGroup()
                                 .addGroup(panelBoutonsActionLayout.createSequentialGroup()
-                                        .addGap(400, 400, 400)
+                                        .addGap(196, 196, 196)
                                         .addComponent(label4)
                                         .addGap(18, 18, 18)
                                         .addComponent(filename, GroupLayout.PREFERRED_SIZE, 287, GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnChooseFile, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
+                                        .addGap(40, 40, 40)
                                         .addComponent(buttonGenerate)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(buttonCancel)
-                                        .addGap(5, 5, 5))
+                                        .addGap(40, 40, 40))
                 );
+
                 panelBoutonsActionLayout.setVerticalGroup(
                         panelBoutonsActionLayout.createParallelGroup()
                                 .addGroup(panelBoutonsActionLayout.createSequentialGroup()
@@ -111,6 +130,7 @@ public class FramePrincipale extends JFrame implements ActionListener {
                                         .addGroup(panelBoutonsActionLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                 .addComponent(label4)
                                                 .addComponent(filename)
+                                                .addComponent(btnChooseFile)
                                                 .addComponent(buttonCancel)
                                                 .addComponent(buttonGenerate))
                                         .addContainerGap())
@@ -234,22 +254,13 @@ public class FramePrincipale extends JFrame implements ActionListener {
             comboBtnPion.forEach((key, value) -> key.setText(""));
             comboBtnPion = new HashMap<>();
         }
-        if (e.getSource() == buttonGenerate) {
-            if (!Objects.equals(filename.getText(), "") && filename.getText() != null) {
-                try {
-                    FileWriter fileWriter = new FileWriter(filename.getText(), false);
-                    comboBtnPion.forEach((key, value) -> {
-                        try {
-                            fileWriter.append(value).append(comboBtnCoord.get(key)).append("\n");
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-                    fileWriter.flush();
-                    fileWriter.close();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+        if (e.getSource() == btnChooseFile) {
+            JFileChooser jFileChooser = new JFileChooser("./");
+            jFileChooser.setMultiSelectionEnabled(false);
+            jFileChooser.showDialog(this, "Choisir");
+            if (jFileChooser.getSelectedFile() != null) {
+                filename.setText(jFileChooser.getSelectedFile().getPath());
+                filename.setCaretPosition(filename.getText().length());
             }
         }
     }
