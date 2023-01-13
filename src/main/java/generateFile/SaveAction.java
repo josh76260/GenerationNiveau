@@ -12,7 +12,7 @@ public class SaveAction extends AbstractAction {
     private final HashMap<JToggleButton, String> comboBtnCoord;
     private final HashMap<JToggleButton, String> comboBtnPion;
     public SaveAction(JTextField filename, HashMap<JToggleButton, String> comboBtnCoord, HashMap<JToggleButton, String> comboBtnPion){
-        super("Générer");
+        super("Sauvegarder");
         this.filename = filename;
         this.comboBtnCoord = comboBtnCoord;
         this.comboBtnPion = comboBtnPion;
@@ -31,7 +31,11 @@ public class SaveAction extends AbstractAction {
                 });
                 fileWriter.flush();
                 fileWriter.close();
+                JOptionPane.showMessageDialog(null, "Sauvegarde effectuée", "Sauvegarde réussie", JOptionPane.INFORMATION_MESSAGE);
+
             } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "La sauvegarde a échouée. Veuillez réessayer.", "Sauvegarde échouée", JOptionPane.ERROR_MESSAGE);
+
                 throw new RuntimeException(ex);
             }
         }

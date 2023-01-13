@@ -3,7 +3,6 @@ package generateFile;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -28,24 +27,27 @@ public class LoadFileAction extends AbstractAction {
         if (jFileChooser.getSelectedFile() != null) {
             filename.setText(jFileChooser.getSelectedFile().getPath());
             filename.setCaretPosition(filename.getText().length());
-        }
-
-        if (filename.getText() != null){
             try {
                 Scanner sc = new Scanner(new File(filename.getText()));
-                while (sc.hasNext()){
+                while (sc.hasNext()) {
                     var ligne = sc.nextLine();
                     var tab = ligne.split(";");
+                    System.out.println("tab.length = " + tab.length);
+                    if (tab.length == 1)
+                        throw new Exception();
                     var coord = ";" + tab[2] + ";" + tab[3];
                     var bouton = comboBtnCoord.entrySet().stream().filter(entry -> entry.getValue().equals(coord)).toList().get(0).getKey();
-                    var pion = tab[0] + tab[1];
-                    bouton.setText(pion);
+                    var pion = tab[0] + ";" + tab[1];
+                    var textePion = tab[0] + tab[1];
+                    bouton.setText(textePion);
                     comboBtnPion.put(bouton, pion);
                 }
-            } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Le chargement a échoué. Veuillez réessayer.", "Chargement échoué", JOptionPane.ERROR_MESSAGE);
+                filename.setText("");
             }
-
+            JOptionPane.showMessageDialog(null, "Le Fichier a bien été chargé.", "Chargement réussi", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }
